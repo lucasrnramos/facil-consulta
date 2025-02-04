@@ -58,7 +58,6 @@ class AuthController extends Controller
     {
         return $this->createNewToken(auth()->refresh());
     }
-
     protected function createNewToken($token): JsonResponse
     {
         return response()->json([
