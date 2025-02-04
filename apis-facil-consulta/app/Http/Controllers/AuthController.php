@@ -41,7 +41,7 @@ class AuthController extends Controller
                 'status'  => 401,
                 'success' => false,
                 'msg'     => 'Login e/ou senha inválidos. Acesso não permitido',
-                'data'    => $currentTime,
+                'data'    => now()->format('Y-m-d H:i:s'),
             ], 401);
         }
 

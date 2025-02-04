@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CidadesController;
 use App\Http\Controllers\MedicosController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PacientesController;
 
 
 Route::group([
@@ -34,9 +35,26 @@ Route::get('/login', function () {
 Route::post('usuario/registrar', [AuthController::class, 'register']);
 Route::post('usuario/login',     [AuthController::class, 'login']);
 
-Route::group(['middleware' => 'auth:api'], function () {
+// Rotas cidades;
+Route::group(['prefix' => 'cidades'], function () {
+    Route::get('/{nome?}', [CidadesController::class, 'show']);
+    Route::get('/{id_cidade}/medicos/{nome?}', [MedicosController::class, 'showByCity']);
 });
 
-Route::get('/cidades/{nome?}', [CidadesController::class, 'show']);
-Route::get('/cidades/{id_cidade}/medicos/{nome?}', [MedicosController::class, 'showByCity']);
-Route::get('/medicos/{nome?}', [MedicosController::class, 'show']);
+// Rotas médicos;
+Route::group(['prefix' => 'medicos'], function () {
+
+    Route::get('/{nome?}', [MedicosController::class, 'show']);
+
+    Route::group(['middleware' => 'auth:api'], function () {
+        Route::post('/consulta', [MedicosController::class, 'store']);
+        Route::get('/{id_medico}/pacientes/{apenas_agendadas?}/{nome?}', [MedicosController::class, 'showByPatient']);
+    });
+
+});
+
+// Rotas pacientes;
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::post('/pacientes/{id_paciente}', [PacientesController::class, 'update']);
+    Route::post('/pacientes', [PacientesController::class, 'store']);
+});
