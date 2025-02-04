@@ -5,43 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Cidade;
 
 class CidadesController extends Controller
 {
-    public function retornaCidades(Request $request): JsonResponse
+    public function show($nome = null)
     {
         try {
 
-            $regras = [
-                "nome" => "required|string",
-            ];
-
-            $mensagens = [
-                "required" => "O campo :attribute é obrigatório",
-                "string"   => "O campo :attribute deve ser uma string",
-            ];
-
-            $validacao = Validator::make($request->all(), $regras, $mensagens);
-
-            if ($validacao->fails()) {
-                return response()->json([
-                    'status'  => 400,
-                    'success' => false,
-                    'msg'     => 'Erro de validação de campos',
-                    'data'    => $validacao->errors(),
-                ], 400);
+            if ($nome) {
+                //Tratamento para fazer a consulta com case insensitive;
+                $cidades = Cidade::select('id', 'nome', 'estado')
+                    ->whereRaw('UPPER(nome) like ?', ["%".strtoupper($nome)."%"])
+                    ->orderBy('nome')
+                    ->get();
+            } else {
+                $cidades = Cidade::select('id', 'nome', 'estado')
+                    ->orderBy('nome')
+                    ->get();
             }
 
-            $nome = $request->input('nome');
-
-            return response()
-                ->json([
-                    "status"  => 200,
-                    "success" => true,
-                    "msg"     => "Cidades retornadas com sucesso",
-                    "object"  => $nome,
-                    "data"    => now()->format('Y-m-d H:i:s'),
-                ], 200);
+            return $cidades;
 
         } catch (\Exception $e) {
             return response()->json([

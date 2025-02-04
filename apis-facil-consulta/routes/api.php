@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CidadesController;
+use App\Http\Controllers\MedicosController;
 use App\Http\Controllers\AuthController;
 
 
@@ -34,5 +35,8 @@ Route::post('usuario/registrar', [AuthController::class, 'register']);
 Route::post('usuario/login',     [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::get('/cidades', [CidadesController::class, 'retornaCidades']);
 });
+
+Route::get('/cidades/{nome?}', [CidadesController::class, 'show']);
+Route::get('/cidades/{id_cidade}/medicos/{nome?}', [MedicosController::class, 'showByCity']);
+Route::get('/medicos/{nome?}', [MedicosController::class, 'show']);
