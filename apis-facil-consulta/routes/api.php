@@ -32,9 +32,16 @@ Route::get('/login', function () {
 
 })->name('login');
 
-
+// Rota que registra um novo usuário;
 Route::post('usuario/registrar', [AuthController::class, 'register']);
+
+// Rota que faz login e retorna o Token;
 Route::post('usuario/login',     [AuthController::class, 'login']);
+
+// Rota que retorna os usuários;
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('/user', [UsuariosController::class, 'index']);
+});
 
 // Rotas cidades;
 Route::group(['prefix' => 'cidades'], function () {
@@ -59,9 +66,4 @@ Route::group(['prefix' => 'medicos'], function () {
 Route::group(['middleware' => 'auth:api'], function () {
     Route::put('/pacientes/{id_paciente}', [PacientesController::class, 'update']);
     Route::post('/pacientes', [PacientesController::class, 'store']);
-});
-
-// Rota que retorna os usuários;
-Route::group(['middleware' => 'auth:api'], function () {
-    Route::get('/user', [UsuariosController::class, 'index']);
 });
