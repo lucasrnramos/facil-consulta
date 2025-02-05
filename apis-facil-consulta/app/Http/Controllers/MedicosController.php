@@ -279,4 +279,68 @@ class MedicosController extends Controller
             ], 500);
         }
     }
+
+    public function storeByMedical(Request $request): JsonResponse
+    {
+        try {
+
+            $regras = [
+                "nome"          => "required|string",
+                "especialidade" => "required|string",
+                "cidade_id"     => "required|integer",
+            ];
+
+            $mensagens = [
+                'nome.required'          => 'O campo nome é obrigatório.',
+                'nome.string'            => 'O campo nome deve ser uma string.',
+                'especialidade.required' => 'O campo especialidade é obrigatório.',
+                'especialidade.string'   => 'O campo especialidade deve ser uma string.',
+                'cidade_id.required'     => 'O campo cidade é obrigatório.',
+                'cidade_id.integer'      => 'O campo cidade deve ser um número inteiro.',
+            ];
+
+            $validador = Validator::make($request->all(), $regras, $mensagens);
+
+            // Verifica se os campos obrigatórios foram informados;
+            if ($validador->fails()) {
+                return response()->json([
+                    'status'  => 400,
+                    'success' => false,
+                    'msg'     => 'Erro de validação.',
+                    'data'    => $validador->errors(),
+                ], 400);
+            }
+
+            $medico = new Medico();
+            $medico->nome          = $request->post('nome');
+            $medico->especialidade = $request->post('especialidade');
+            $medico->cidade_id     = $request->post('cidade_id');
+
+            if ($medico->save()) {
+                return response()->json([
+                    'id'          => $medico->id,
+                    'nome'        => $medico->nome,
+                    'especialidade' => $medico->especialidade,
+                    'cidade_id'   => $medico->cidade_id,
+                    'created_at'  => $medico->created_at,
+                    'updated_at'  => $medico->updated_at,
+                    'deleted_at'  => $medico->deleted_at
+                ], 200);
+            } else {
+                return response()->json([
+                    'status'  => 500,
+                    'success' => false,
+                    'msg'     => 'Erro ao salvar médico.',
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 500,
+                'success' => false,
+                'msg'     => 'Erro ao salvar médico: ' . $e->getMessage(),
+                'data'    => now()->format('Y-m-d H:i:s'),
+            ], 500);
+        }
+    }
 }
