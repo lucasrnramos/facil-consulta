@@ -22,7 +22,7 @@ Route::group([
         Route::post('/verify',      [AuthController::class, 'verify']);
 });
 
-
+// Rota fake para retonar mensagem de não autorizado;
 Route::get('/login', function () {
     return response()
         ->json([
@@ -33,10 +33,10 @@ Route::get('/login', function () {
 })->name('login');
 
 // Rota que registra um novo usuário;
-Route::post('usuario/registrar', [AuthController::class, 'register']);
+Route::post('/usuario/registrar', [AuthController::class, 'register']);
 
 // Rota que faz login e retorna o Token;
-Route::post('usuario/login',     [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 
 // Rota que retorna os usuários;
 Route::group(['middleware' => 'auth:api'], function () {
