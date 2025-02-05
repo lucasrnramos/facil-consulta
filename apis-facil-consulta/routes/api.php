@@ -7,6 +7,7 @@ use App\Http\Controllers\CidadesController;
 use App\Http\Controllers\MedicosController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PacientesController;
+use App\Http\Controllers\UsuariosController;
 
 
 Route::group([
@@ -31,9 +32,16 @@ Route::get('/login', function () {
 
 })->name('login');
 
-
+// Rota que registra um novo usuário;
 Route::post('usuario/registrar', [AuthController::class, 'register']);
+
+// Rota que faz login e retorna o Token;
 Route::post('usuario/login',     [AuthController::class, 'login']);
+
+// Rota que retorna os usuários;
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('/user', [UsuariosController::class, 'index']);
+});
 
 // Rotas cidades;
 Route::group(['prefix' => 'cidades'], function () {
@@ -47,6 +55,7 @@ Route::group(['prefix' => 'medicos'], function () {
     Route::get('/{nome?}', [MedicosController::class, 'show']);
 
     Route::group(['middleware' => 'auth:api'], function () {
+        Route::post('/', [MedicosController::class, 'storeByMedical']);
         Route::post('/consulta', [MedicosController::class, 'store']);
         Route::get('/{id_medico}/pacientes/{apenas_agendadas?}/{nome?}', [MedicosController::class, 'showByPatient']);
     });
@@ -55,6 +64,6 @@ Route::group(['prefix' => 'medicos'], function () {
 
 // Rotas pacientes;
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::post('/pacientes/{id_paciente}', [PacientesController::class, 'update']);
+    Route::put('/pacientes/{id_paciente}', [PacientesController::class, 'update']);
     Route::post('/pacientes', [PacientesController::class, 'store']);
 });
